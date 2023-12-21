@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/148676dc-014c-4fc9-89d6-646d0effe14e/resourceGroups/babyfeel001-rg/providers/Microsoft.Web/sites/babyfeel001",
+    "appService.deploySubpath": "."
+}

@@ -1,30 +1,103 @@
-<!doctype html>
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Hello Azure - Python Quickstart</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-</head>
-<html>
-   <body>
-     <main>
-        <div class="px-4 py-3 my-2 text-center">
-            <img class="d-block mx-auto mb-4" src="{{ url_for('static', filename='images/azure-icon.svg') }}" alt="Azure Logo" width="192" height="192"/>
-            <!-- <img  src="/docs/5.1/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
-            <h1 class="display-6 fw-bold text-primary">Welcome to Azure</h1>            
-          </div>
-        <form method="post" action="{{url_for('hello')}}">
-            <div class="col-md-6 mx-auto text-center">
-                <label for="name" class="form-label fw-bold fs-5">Could you please tell me your name?</label>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-                <!-- <p class="lead mb-2">Could you please tell me your name?</p> -->
-                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center align-items-center my-1">
-                    <input type="text" class="form-control" id="name" name="name" style="max-width: 256px;">
-                  </div>            
-                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center my-2">
-                  <button type="submit" class="btn btn-primary btn-lg px-4 gap-3">Say Hello</button>
-                </div>            
-            </div>
+        #chat-container {
+            width: 500px;
+            height: 600px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #chat-window {
+            height: 500px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .user-message {
+            background-color: #e6f7ff;
+            padding: 8px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+
+        .bot-message {
+            background-color: #f2f2f2;
+            padding: 8px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+
+        #user-input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #chat-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        #send-btn {
+            padding: 10px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-window"></div>
+        <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button id="send-btn" type="submit">Send</button>
         </form>
-     </main>      
-   </body>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#chat-form').submit(function(e){
+                e.preventDefault();
+                var user_input = $('#user-input').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/submit',
+                    data: { user_input: user_input },
+                    success: function(data){
+                        var user_message = '<p class="user-message">User: ' + data.user_input + '</p>';
+                        var bot_message = '<p class="bot-message">Bot: ' + data.answer + '</p>';
+
+                        $('#chat-window').append(user_message);
+                        $('#chat-window').append(bot_message);
+                        $('#user-input').val('');
+
+                        $('#chat-window').animate({scrollTop: $('#chat-window').prop("scrollHeight")}, 500);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
 </html>

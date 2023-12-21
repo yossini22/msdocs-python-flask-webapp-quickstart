@@ -1,32 +1,30 @@
-import os
-
-from flask import (Flask, redirect, render_template, request,
-                   send_from_directory, url_for)
+# app.py
+from flask import Flask, render_template, request, jsonify
+from llm import give_advice
 
 app = Flask(__name__)
 
+chat_history = []
+
+def get_answer(question):
+    # This function just returns a mirror of the question for demonstration purposes
+    patient_data_dict={"a":1}
+    memory = []
+    logger = None
+    answer = give_advice(question, patient_data_dict, memory, logger)
+    return f"{answer}"
 
 @app.route('/')
 def index():
-   print('Request for index page received')
-   return render_template('index.html')
+    return render_template('index.html')
 
-@app.route('/favicon.ico')
-def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
-
-@app.route('/hello', methods=['POST'])
-def hello():
-   name = request.form.get('name')
-
-   if name:
-       print('Request for hello page received with name=%s' % name)
-       return render_template('hello.html', name = name)
-   else:
-       print('Request for hello page received with no name or blank name -- redirecting')
-       return redirect(url_for('index'))
-
+@app.route('/submit', methods=['POST'])
+def submit():
+    user_input = request.form['user_input']
+    chat_history.append({'user': True, 'message': user_input})
+    answer = get_answer(user_input)
+    chat_history.append({'user': False, 'message': answer})
+    return jsonify({'user_input': user_input, 'answer': answer, 'chat_history': chat_history})
 
 if __name__ == '__main__':
-   app.run()
+    app.run(debug=True)
